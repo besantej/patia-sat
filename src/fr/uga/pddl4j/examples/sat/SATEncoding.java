@@ -21,27 +21,6 @@ public class SATEncoding {
 
 		List<List<Integer>> clauses = new ArrayList<>();
 		int t =(p.getActions().size()+p.getFluents().size());
-		//		Object[] var = new Object[nbsteps*t+1];
-		//		int j=1;
-		//		for(int i=0;i<nbsteps;i++) {
-		//			int flu=0;
-		//			while (j <=i*t+p.getFluents().size()) {
-		//				Fluent a = p.getFluents().get(flu);
-		//				var[j]=a;
-		//				j++;
-		//				flu++;
-		//			}
-		//			int act=0;
-		//			while (j <= (i+1)*t) {
-		//				Action a = p.getActions().get(act);
-		//				var[j]=a;
-		//				j++;
-		//				act++;
-		//			}
-		//		}
-
-
-
 		for (int k=0; k<p.getFluents().size();k++) {
 			List<Integer> clInit= new ArrayList<>();
 			if(p.getInitialState().getPositiveFluents().get(k)) {
@@ -62,7 +41,7 @@ public class SATEncoding {
 
 				//fix to debug
 				Action a = p.getActions().get(d-(t*step)-fSize);
-				if(a.getUnconditionalEffect().getNegativeFluents().get(0)!= a.getUnconditionalEffect().getPositiveFluents().get(0)) {
+				//if(a.getUnconditionalEffect().getNegativeFluents().get(0)!= a.getUnconditionalEffect().getPositiveFluents().get(0)) {
 
 
 					//parcourir les preconditions de chaque action
@@ -105,13 +84,12 @@ public class SATEncoding {
 					}
 
 
-				}
+				//}
 			}
 
 		}
 		//fluentAction contient une liste de Fluent contenant chaque action qui peut les modifier 
 		HashMap<Integer, List<Integer>> fluentAction = new HashMap<>();
-		System.out.print(p.getFluents().size());
 		for(int clause =p.getFluents().size(); clause < clauses.size();clause++) {
 			List<Integer> cl = clauses.get(clause);
 			for(int fluent = 1; fluent<cl.size(); fluent++) {
@@ -190,32 +168,6 @@ public class SATEncoding {
 					}
 					clauses.add(cl);
 				}
-
-
-
-
-		//		if(p.getGoal().getPositiveFluents().cardinality()>0) {
-		//			
-		//			String str = p.getGoal().getPositiveFluents().toString();
-		//			String[] goal = str.substring(1, str.length() - 1).split(", ");
-		//			
-		//			for(String g : goal) {
-		//				List<Integer> g1 =new ArrayList<>();
-		//				g1.add(Integer.parseInt(g)+t*nbsteps+1);
-		//				clauses.add(g1);
-		//			}
-		//		}
-		//		if(p.getGoal().getNegativeFluents().cardinality()>0) {
-		//			String str1 = p.getGoal().getNegativeFluents().toString();
-		//
-		//			String[] goal1 = str1.substring(1, str1.length() - 1).split(", ");
-		//			for(String g : goal1) {
-		//				int val = Integer.parseInt(g)+t*nbsteps-1;
-		//				List<Integer> g1 =new ArrayList<>();
-		//				g1.add(0-val);
-		//				clauses.add(g1);
-		//			}
-		//		}
 
 		return clauses;
 	}

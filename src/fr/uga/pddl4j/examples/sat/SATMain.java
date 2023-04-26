@@ -69,24 +69,20 @@ public class SATMain extends AbstractPlanner {
      */
     @Override
     public Plan solve(final Problem problem) {
-//        System.out.println("mi22 test"+problem.getActions());
         SATEncoding satEncoding = new SATEncoding(problem);
-        List<List<Integer>> clauses = satEncoding.Encode(1);
-//        List<List<Integer>> clauses = new ArrayList<>();
-//        List<Integer> clause1 = new ArrayList<>();
-//        clause1.add(-1);
-//        clause1.add(-2);
-//        List<Integer> clause2 = new ArrayList<>();
-//        clause2.add(1);
-//        List<Integer> clause3 = new ArrayList<>();
-//        clause3.add(-2);
-//        clauses.add(clause1);
-//        clauses.add(clause2);
-//        clauses.add(clause3);
+        List<Integer> plan = new ArrayList<Integer>();
+        List<List<Integer>> clauses;
+        int count = 0;
+        while(plan.size()==0) {
+        	count++;
+        	clauses = satEncoding.Encode(count);
+        	
+        
         ISolver solver = SolverFactory.newDefault();
         solver.setTimeout(300); // 1 hour timeout
         final int MAXVAR = 1000000;
         final int NBCLAUSES = 500000;
+        
 
         
         // prepare the solver to accept MAXVAR variables. MANDATORY for MAXSAT solving
@@ -100,25 +96,15 @@ public class SATMain extends AbstractPlanner {
             int[] intClause = clause.stream().mapToInt(i -> i).toArray();
             try {
             	VecInt v = new VecInt(intClause);
-            	System.out.println(" heeooo   "+v);
 				solver.addClause(v);
 				
 			} catch (ContradictionException e) {
 				// TODO Auto-generated catch block
-			//	e.printStackTrace();
+				e.printStackTrace();
 			}
         }
-
-        // we are done. Working now on the IProblem interface
-//        IProblem problem = solver;
-//        if (problem.isSatisfiable()) {
-//           ....
-//        } else {
-//         ...
-//        }
-     // Find a satisfying assignment (a plan)
         
-        List<Integer> plan = new ArrayList<Integer>();
+       
         try {
             if (solver.isSatisfiable()) {
                 int[] model = solver.model();
@@ -132,20 +118,21 @@ public class SATMain extends AbstractPlanner {
             // Handle timeout exception
             e.printStackTrace();
         }
-       
+        }
         int t =(problem.getActions().size()+problem.getFluents().size());
         Plan newPlan = new SequentialPlan();
         
         for(int literal : plan) {
+        	
         	int actionId = (literal%t) - problem.getFluents().size();
-        	if( actionId>= problem.getFluents().size()) {
+        	if( actionId>0) {
         		Action a = problem.getActions().get(actionId-1);
         		
-        		 newPlan.add(Math.round(literal/t), a);
+        		 newPlan.add(Math.abs(literal/t), a);
         	}
         	
-        }
         
+        }
         
         return newPlan;
     }
